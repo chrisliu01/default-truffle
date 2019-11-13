@@ -57,7 +57,7 @@ module.exports = {
 	  },
 	  development: {
               host: '127.0.0.1',
-		  port:'8545',
+		  port:'7545',
 		  network_id: '*'
 		  //from: "0x7B1A0E66B46DfbCf33ea320aB7929d064266928B", // use the account-id generated during the setup process
 		  //gas: 20000000

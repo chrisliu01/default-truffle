@@ -10,17 +10,39 @@ import "./ConvertLib.sol";
 contract MetaCoin {
   mapping (address => uint) balances;
 
-  event Transfer(address indexed _from, address indexed _to, uint256 _value);
+  event Transfer(string method, address indexed _from, address indexed _to, uint256 _value, uint256 value_from, uint256 value_to);
 
   constructor() public {
     balances[tx.origin] = 10000;
   }
 
+  function deposit(uint256 amount)  public payable{
+    require(msg.value == amount);
+  }
+
+  function getBalance() public view returns (uint256) {
+    return address(this).balance;
+  }
+
+  function withdraw(uint256 amount) public payable{
+    require(msg.value == amount);
+    require(address(this).balance>amount);
+    msg.sender.transfer(msg.value);
+  }
+
   function sendCoin(address receiver, uint amount) public returns(bool sufficient) {
     if (balances[msg.sender] < amount) return false;
+    emit Transfer("before:", msg.sender, receiver, amount, balances[msg.sender], balances[receiver]);
     balances[msg.sender] -= amount;
     balances[receiver] += amount;
-    emit Transfer(msg.sender, receiver, amount);
+    emit Transfer("after:", msg.sender, receiver, amount, balances[msg.sender], balances[receiver]);
+    return true;
+  }
+
+  function sendEth(address payable receiver, uint amount) public payable returns(bool sufficient) {
+    emit Transfer("before sendEth:", msg.sender, receiver, amount, balances[msg.sender], balances[receiver]);
+    receiver.transfer(amount);
+    emit Transfer("after afterEth:", msg.sender, receiver, amount, balances[msg.sender], balances[receiver]);
     return true;
   }
 
